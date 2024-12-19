@@ -87,7 +87,7 @@ function createPDF(calendarData) {
 
   calendarData.forEach(({ month, year, rows }) => {
     const pageWidth = 297; // A4 Landscape width in mm
-    const rowHeight = 210 / 12; // Row height to evenly fill a page
+    const rowHeight = 209 / 12; // Row height to evenly fill a page
 
     const pages = [
       rows.slice(0, 9),
@@ -137,15 +137,15 @@ function createPDF(calendarData) {
           if (pageRows[data.row.index]?.isWeekend) {
             pdf.setFillColor(211, 211, 211); // Light gray color for weekends
             // Draw the background color first
-            pdf.rect(
-              data.cell.x,
-              data.cell.y,
-              data.cell.width,
-              data.cell.height,
-              'F'
-            );
-            pdf.setTextColor(0, 0, 0); // Ensure text is visible
-            pdf.setDrawColor(0, 0, 0); // Ensure borders are visible
+            // pdf.rect(
+            //  data.cell.x,
+            //  data.cell.y,
+            //  data.cell.width,
+            //  data.cell.height,
+            //  'F'
+            //);
+            //pdf.setTextColor(0, 0, 0); // Ensure text is visible
+            //pdf.setDrawColor(0, 0, 0); // Ensure borders are visible
           }
         },
         rowPageBreak: 'auto',
