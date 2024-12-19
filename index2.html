@@ -101,9 +101,9 @@
           }
 
           // Draw the vertical month and year label manually
-          pdf.setFontSize(24);
+          pdf.setFontSize(30);
           const text = `${month} ${year}`;
-          pdf.text(text, 5, 140, { angle: 90 }); // Adjust rotation direction and positioning
+          pdf.text(text, 10, 140, { angle: 90 }); // Adjust rotation direction and positioning
 
           const startY = pageIndex === 0 ? 210 - (rowHeight * 9) : 0; // Align first page table at the bottom
 
@@ -142,6 +142,8 @@
                   data.cell.height,
                   'F'
                 );
+                pdf.setTextColor(0, 0, 0); // Ensure text is visible
+                pdf.setDrawColor(0, 0, 0); // Ensure borders are visible
               }
             },
             rowPageBreak: 'auto',
