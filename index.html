@@ -33,7 +33,6 @@
     }
     .month-name {
       writing-mode: vertical-lr;
-      transform: rotate(180deg);
       font-size: 14px;
     }
     .weekend {
@@ -106,18 +105,48 @@
           }
 
           const tableBody = pageRows.map(row => [
-            month,
+            '',
             row.dayName,
             row.dayNumber,
-            row.isWeekend ? 'Weekend' : ''
+            '', '', '', '', ''
           ]);
 
           pdf.autoTable({
-            head: [["Month", "Day", "Date", "Note"]],
             body: tableBody,
             startY: 20,
+            theme: 'grid',
             styles: {
-              fillColor: (rowData) => rowData[3] === 'Weekend' ? [200, 200, 200] : [255, 255, 255]
+              halign: 'center',
+              valign: 'middle',
+            },
+            columnStyles: {
+              0: { cellWidth: 15, halign: 'center' }, // Month column
+              1: { cellWidth: 10 }, // Day column
+              2: { cellWidth: 10 }, // Date column
+              3: { cellWidth: (pageWidth - 35) / 4 }, // Flexible column
+              4: { cellWidth: (pageWidth - 35) / 4 },
+              5: { cellWidth: (pageWidth - 35) / 4 },
+              6: { cellWidth: (pageWidth - 35) / 4 },
+            },
+            didDrawCell: (data) => {
+              if (data.column.index === 0 && data.row.index === 0) {
+                pdf.text(
+                  `${month} ${year}`,
+                  data.cell.x + data.cell.width / 2,
+                  data.cell.y + rowHeight * 4.5,
+                  { angle: 90, align: 'center' }
+                );
+              }
+              if (data.column.index === 1 && calendarData[data.row.index]?.rows[data.row.index]?.isWeekend) {
+                pdf.setFillColor(211, 211, 211);
+                pdf.rect(
+                  data.cell.x,
+                  data.cell.y,
+                  data.cell.width,
+                  data.cell.height,
+                  'F'
+                );
+              }
             }
           });
         });
