@@ -133,7 +133,7 @@ function createPDF(calendarData) {
           5: { cellWidth: (pageWidth - 50) / 4 },
         },
         horizontalPageBreak: false, // Prevent table from breaking across pages
-        didDrawCell: (data) => {
+        willDrawCell: (data) => {
           if (pageRows[data.row.index]?.isWeekend) {
             pdf.setFillColor(211, 211, 211); // Light gray color for weekends
             // Draw the background color first
