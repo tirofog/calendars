@@ -84,10 +84,9 @@
     }
 
     async function createPDF(calendarData) {
-      const jsPDFModule = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
-      const autoTableModule = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js');
+      const { jsPDF } = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
+      await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js');
 
-      const { jsPDF } = jsPDFModule;
       const pdf = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'landscape' });
 
       calendarData.forEach(({ month, year, rows }) => {
@@ -117,9 +116,7 @@
             body: tableBody,
             startY: 20,
             styles: {
-              fillColor: (rowData, data) => {
-                return data.row.index % 2 === 0 ? [200, 200, 200] : [255, 255, 255];
-              }
+              fillColor: (rowData) => rowData[3] === 'Weekend' ? [200, 200, 200] : [255, 255, 255]
             }
           });
         });
