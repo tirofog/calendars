@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Calendar PDF Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-top: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 0;
+      padding: 0;
+    }
+    .calendar-table td {
+      border: 1px solid black;
+      text-align: center;
+      font-size: 12px;
+      padding: 0;
+    }
+    .month-name {
+      writing-mode: vertical-lr;
+      transform: rotate(180deg);
+      font-size: 14px;
+    }
+    .weekend {
+      background-color: lightgray;
+    }
+  </style>
+</head>
+<body>
+  <h1>Custom Calendar PDF Generator</h1>
+  <form id="calendarForm">
+    <label for="months">Enter Months (e.g., January, February):</label>
+    <input type="text" id="months" name="months" required placeholder="January, February">
+    <button type="submit">Generate PDF</button>
+  </form>
+
+  <script>
+    document.getElementById('calendarForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const months = document.getElementById('months').value.split(',').map(m => m.trim());
+      if (months.length === 0) {
+        alert('Please enter at least one month.');
+        return;
+      }
+
+      const calendarData = months.map((month) => generateCalendarData(month));
+      await createPDF(calendarData);
+    });
+
+    function generateCalendarData(month) {
+      const daysInMonth = new Date(new Date().getFullYear(), new Date(Date.parse(month + " 1")).getMonth() + 1, 0).getDate();
+      const rows = [];
+
+      for (let i = 1; i <= daysInMonth; i++) {
+        const date = new Date(new Date().getFullYear(), new Date(Date.parse(month + " 1")).getMonth(), i);
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        rows.push({
+          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }).substring(0, 2),
+          dayNumber: i,
+          isWeekend,
+        });
+      }
+
+      return { month, rows };
+    }
+
+    async function createPDF(calendarData) {
+      const { jsPDF } = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
+      const pdf = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'landscape' });
+
+      calendarData.forEach(({ month, rows }) => {
+        const pageWidth = 297; // A4 Landscape width in mm
+        const rowHeight = pageWidth / 12;
+
+        const pages = [
+          rows.slice(0, 9),
+          rows.slice(9, 21),
+          rows.slice(21),
+        ];
+
+        pages.forEach((pageRows, pageIndex) => {
+          if (pdf.internal.getNumberOfPages() > 1 || pageIndex > 0) {
+            pdf.addPage('a4', 'landscape');
+          }
+
+          pdf.setFontSize(10);
+
+          // Draw table
+          pageRows.forEach((row, rowIndex) => {
+            const yOffset = pageIndex === 0
+              ? (9 - pageRows.length + rowIndex) * rowHeight
+              : rowIndex * rowHeight;
+
+            pdf.text(month, 5, yOffset + rowHeight / 2, {
+              align: 'center',
+              angle: 90,
+            });
+
+            pdf.text(row.dayName, 20, yOffset + rowHeight / 2);
+            pdf.text(String(row.dayNumber), 30, yOffset + rowHeight / 2);
+            pdf.rect(0, yOffset, pageWidth);
+          });
+        });
+      });
+
+      pdf.save('custom_calendar.pdf');
+    }
+  </script>
+</body>
+</html>
