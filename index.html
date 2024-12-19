@@ -84,8 +84,11 @@
     }
 
     async function createPDF(calendarData) {
-      const { jsPDF } = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
-      await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js');
+      const jsPDFModule = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
+      const autoTableModule = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js');
+
+      const { jsPDF } = jsPDFModule;
+      autoTableModule;
 
       const pdf = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'landscape' });
 
