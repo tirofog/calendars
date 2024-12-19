@@ -103,13 +103,7 @@
           // Draw the vertical month and year label manually
           pdf.setFontSize(24);
           const text = `${month} ${year}`;
-          const x = 10; // Fixed x position
-          let y = 148; // Start y position (centered vertically on page)
-
-          for (let i = 0; i < text.length; i++) {
-            pdf.text(text[i], x, y, { angle: -90 });
-            y += 8; // Adjust spacing between characters
-          }
+          pdf.text(text, 10, 160, { angle: -90 }); // Rotate the entire text
 
           const tableBody = pageRows.map(row => [
             row.dayName,
@@ -126,6 +120,7 @@
               halign: 'center',
               valign: 'middle',
               fontSize: 14,
+              minCellHeight: rowHeight, // Set row height explicitly
             },
             columnStyles: {
               0: { cellWidth: 15 }, // Day column
@@ -146,9 +141,6 @@
                   'F'
                 );
               }
-            },
-            rowStyles: {
-              minCellHeight: rowHeight,
             },
             rowPageBreak: 'auto',
             tableWidth: 'auto',
