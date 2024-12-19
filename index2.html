@@ -103,7 +103,9 @@
           // Draw the vertical month and year label manually
           pdf.setFontSize(24);
           const text = `${month} ${year}`;
-          pdf.text(text, 10, 160, { angle: -90 }); // Rotate the entire text
+          pdf.text(text, 5, 140, { angle: 90 }); // Adjust rotation direction and positioning
+
+          const startY = pageIndex === 0 ? 210 - (rowHeight * 9) : 0; // Align first page table at the bottom
 
           const tableBody = pageRows.map(row => [
             row.dayName,
@@ -113,7 +115,7 @@
 
           pdf.autoTable({
             body: tableBody,
-            startY: 0,
+            startY: startY,
             margin: { top: 0, left: 20, right: 0 },
             theme: 'grid',
             styles: {
