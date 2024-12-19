@@ -51,10 +51,9 @@
     <button type="submit">Generate PDF</button>
   </form>
 
-  <script type="module">
-    import jsPDF from 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js';
-    import autoTable from 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js';
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script>
     document.getElementById('calendarForm').addEventListener('submit', (event) => {
       event.preventDefault();
 
@@ -87,6 +86,8 @@
     }
 
     function createPDF(calendarData) {
+      const { jsPDF } = window.jspdf;
+
       const pdf = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'landscape' });
 
       calendarData.forEach(({ month, year, rows }) => {
@@ -111,7 +112,7 @@
             row.isWeekend ? 'Weekend' : ''
           ]);
 
-          autoTable(pdf, {
+          pdf.autoTable({
             head: [["Month", "Day", "Date", "Note"]],
             body: tableBody,
             startY: 20,
