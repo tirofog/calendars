@@ -87,8 +87,7 @@
 
       calendarData.forEach(({ month, year, rows }) => {
         const pageWidth = 297; // A4 Landscape width in mm
-        const totalRowsPerPage = 12;
-        const rowHeight = 210 / totalRowsPerPage; // Full page height divided by rows
+        const rowHeight = 210 / 12; // Row height to evenly fill a page
 
         const pages = [
           rows.slice(0, 9),
@@ -101,9 +100,12 @@
             pdf.addPage('a4', 'landscape');
           }
 
-          // Draw the large month and year label at the top left corner
+          // Draw the vertical month and year label
           pdf.setFontSize(24);
-          pdf.text(`${month} ${year}`, 10, 15);
+          pdf.textWithRotation(`${month} ${year}`, 5, 148, {
+            angle: -90,
+            align: 'center',
+          });
 
           const tableBody = pageRows.map(row => [
             row.dayName,
@@ -113,23 +115,24 @@
 
           pdf.autoTable({
             body: tableBody,
-            startY: 20,
+            startY: 0,
+            margin: { top: 0, left: 20, right: 0 },
             theme: 'grid',
             styles: {
               halign: 'center',
               valign: 'middle',
-              fontSize: 10,
+              fontSize: 14,
             },
             columnStyles: {
-              0: { cellWidth: 15, fontSize: 14 }, // Day column
-              1: { cellWidth: 15, fontSize: 14 }, // Date column
-              2: { cellWidth: (pageWidth - 30) / 4 }, // Flexible column
-              3: { cellWidth: (pageWidth - 30) / 4 },
-              4: { cellWidth: (pageWidth - 30) / 4 },
-              5: { cellWidth: (pageWidth - 30) / 4 },
+              0: { cellWidth: 15 }, // Day column
+              1: { cellWidth: 15 }, // Date column
+              2: { cellWidth: (pageWidth - 50) / 4 }, // Flexible column
+              3: { cellWidth: (pageWidth - 50) / 4 },
+              4: { cellWidth: (pageWidth - 50) / 4 },
+              5: { cellWidth: (pageWidth - 50) / 4 },
             },
             didDrawCell: (data) => {
-              if (data.column.index === 0 && pageRows[data.row.index]?.isWeekend) {
+              if (pageRows[data.row.index]?.isWeekend) {
                 pdf.setFillColor(211, 211, 211);
                 pdf.rect(
                   data.cell.x,
@@ -140,12 +143,11 @@
                 );
               }
             },
-            bodyStyles: {
-              cellPadding: rowHeight / 2 - 6, // Adjust padding for larger rows
+            rowStyles: {
+              minCellHeight: rowHeight,
             },
             rowPageBreak: 'auto',
             tableWidth: 'auto',
-            rowHeight,
           });
         });
       });
