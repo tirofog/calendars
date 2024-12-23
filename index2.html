@@ -87,7 +87,7 @@ function createPDF(calendarData) {
 
   calendarData.forEach(({ month, year, rows }) => {
     const pageWidth = 297; // A4 Landscape width in mm
-    const rowHeight = 204 / 12; // Row height to evenly fill a page
+    const rowHeight = 202 / 12; // Row height to evenly fill a page
 
     const pages = [
       rows.slice(0, 9),
