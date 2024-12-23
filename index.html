@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Custom Calendar PDF Generator</title>
+  <title>Kalender PDF Generator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -37,13 +37,13 @@
   </style>
 </head>
 <body>
-  <h1>Custom Calendar PDF Generator</h1>
+  <h1>Kalender PDF Generator</h1>
   <form id="calendarForm">
-    <label for="months">Enter Months (e.g., January, February):</label>
-    <input type="text" id="months" name="months" required placeholder="January, February">
-    <label for="year">Enter Year:</label>
-    <input type="number" id="year" name="year" required placeholder="2024" min="1900" max="2100">
-    <button type="submit">Generate PDF</button>
+    <label for="months">Voer Maanden in (bijv. januari, februari of januari-december):</label>
+    <input type="text" id="months" name="months" required placeholder="januari, februari of januari-december">
+    <label for="year">Voer Jaar in:</label>
+    <input type="number" id="year" name="year" required placeholder="2025" min="1900" max="2100">
+    <button type="submit">Genereer PDF</button>
   </form>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
@@ -52,10 +52,16 @@
     document.getElementById('calendarForm').addEventListener('submit', (event) => {
       event.preventDefault();
 
-      const months = document.getElementById('months').value.split(',').map(m => m.trim());
+      const monthsInput = document.getElementById('months').value.trim();
       const year = parseInt(document.getElementById('year').value);
-      if (months.length === 0 || isNaN(year)) {
-        alert('Please enter valid months and year.');
+      if (!monthsInput || isNaN(year)) {
+        alert('Voer geldige maanden en jaar in.');
+        return;
+      }
+
+      const months = parseMonthsInput(monthsInput);
+      if (!months.length) {
+        alert('Voer geldige maanden in.');
         return;
       }
 
@@ -63,21 +69,43 @@
       createPDF(calendarData);
     });
 
+    function parseMonthsInput(input) {
+      const allMonths = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
+      const rangeMatch = input.match(/^([a-zA-Z]+)-([a-zA-Z]+)$/);
+
+      if (rangeMatch) {
+        const startMonth = rangeMatch[1].toLowerCase();
+        const endMonth = rangeMatch[2].toLowerCase();
+        const startIndex = allMonths.indexOf(startMonth);
+        const endIndex = allMonths.indexOf(endMonth);
+
+        if (startIndex !== -1 && endIndex !== -1 && startIndex <= endIndex) {
+          return allMonths.slice(startIndex, endIndex + 1);
+        }
+      } else {
+        return input.split(',').map(m => m.trim().toLowerCase()).filter(m => allMonths.includes(m));
+      }
+
+      return [];
+    }
+
     function generateCalendarData(month, year) {
-      const daysInMonth = new Date(year, new Date(Date.parse(month + " 1, " + year)).getMonth() + 1, 0).getDate();
+      const allMonths = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
+      const monthIndex = allMonths.indexOf(month);
+      const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
       const rows = [];
 
       for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(year, new Date(Date.parse(month + " 1, " + year)).getMonth(), i);
+        const date = new Date(year, monthIndex, i);
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
         rows.push({
-          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }).substring(0, 2),
+          dayName: date.toLocaleDateString('nl-NL', { weekday: 'short' }),
           dayNumber: i,
           isWeekend,
         });
       }
 
-      return { month, year, rows };
+      return { month: month.charAt(0).toUpperCase() + month.slice(1), year, rows };
     }
 
     function createPDF(calendarData) {
@@ -100,12 +128,12 @@
             pdf.addPage('a4', 'landscape');
           }
 
-          // Draw the vertical month and year label
-          pdf.setFontSize(24);
-          pdf.textWithRotation(`${month} ${year}`, 5, 148, {
-            angle: -90,
-            align: 'center',
-          });
+          // Draw the vertical month and year label manually
+          pdf.setFontSize(30);
+          const text = `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+          pdf.text(text, 15, 140, { angle: 90 }); // Adjust rotation direction and positioning
+
+          const startY = pageIndex === 0 ? 210 - (rowHeight * 9) : 0; // Align first page table at the bottom
 
           const tableBody = pageRows.map(row => [
             row.dayName,
@@ -115,13 +143,14 @@
 
           pdf.autoTable({
             body: tableBody,
-            startY: 0,
-            margin: { top: 0, left: 20, right: 0 },
+            startY: startY,
+            margin: { top: 0, left: 20, right: 0, bottom: -20 },
             theme: 'grid',
             styles: {
               halign: 'center',
               valign: 'middle',
-              fontSize: 14,
+              fontSize: 20,
+              minCellHeight: rowHeight, // Set row height explicitly
             },
             columnStyles: {
               0: { cellWidth: 15 }, // Day column
@@ -131,20 +160,10 @@
               4: { cellWidth: (pageWidth - 50) / 4 },
               5: { cellWidth: (pageWidth - 50) / 4 },
             },
-            didDrawCell: (data) => {
+            willDrawCell: (data) => {
               if (pageRows[data.row.index]?.isWeekend) {
                 pdf.setFillColor(211, 211, 211);
-                pdf.rect(
-                  data.cell.x,
-                  data.cell.y,
-                  data.cell.width,
-                  data.cell.height,
-                  'F'
-                );
               }
-            },
-            rowStyles: {
-              minCellHeight: rowHeight,
             },
             rowPageBreak: 'auto',
             tableWidth: 'auto',
@@ -152,7 +171,7 @@
         });
       });
 
-      pdf.save('custom_calendar.pdf');
+      pdf.save('aangepaste_kalender.pdf');
     }
   </script>
 </body>
