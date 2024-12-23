@@ -87,7 +87,7 @@ function createPDF(calendarData) {
 
   calendarData.forEach(({ month, year, rows }) => {
     const pageWidth = 297; // A4 Landscape width in mm
-    const rowHeight = 202 / 12; // Row height to evenly fill a page
+    const rowHeight = 210 / 12; // Row height to evenly fill a page
 
     const pages = [
       rows.slice(0, 9),
@@ -103,7 +103,7 @@ function createPDF(calendarData) {
       // Draw the vertical month and year label manually
       pdf.setFontSize(30);
       const text = `${month} ${year}`;
-      pdf.text(text, 10, 140, { angle: 90 }); // Adjust rotation direction and positioning
+      pdf.text(text, 10, 140, { angle: 90 }); // (txt, x, y, style) Adjust rotation direction and positioning
 
       const startY = pageIndex === 0 ? 210 - (rowHeight * 9) : 0; // Align first page table at the bottom
 
@@ -116,12 +116,12 @@ function createPDF(calendarData) {
       pdf.autoTable({
         body: tableBody,
         startY: startY,
-        margin: { top: 0, left: 20, right: 0, bottom: -20 },
+        margin: { top: 0, left: 15, right: 0, bottom: -20 },
         theme: 'grid',
         styles: {
           halign: 'center',
           valign: 'middle',
-          fontSize: 12,
+          fontSize: 14,
           minCellHeight: rowHeight, // Set row height explicitly
         },
         columnStyles: {
