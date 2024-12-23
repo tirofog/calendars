@@ -71,7 +71,7 @@
         const date = new Date(year, new Date(Date.parse(month + " 1, " + year)).getMonth(), i);
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
         rows.push({
-          dayName: date.toLocaleDateString('en-US', { weekday: 'short' }).substring(0, 2),
+          dayName: date.toLocaleDateString('nl-NL', { weekday: 'short' }).substring(0, 2),
           dayNumber: i,
           isWeekend,
         });
@@ -127,10 +127,10 @@ function createPDF(calendarData) {
         columnStyles: {
           0: { cellWidth: 15 }, // Day column
           1: { cellWidth: 15 }, // Date column
-          2: { cellWidth: (pageWidth - 50) / 4 }, // Flexible column
-          3: { cellWidth: (pageWidth - 50) / 4 },
-          4: { cellWidth: (pageWidth - 50) / 4 },
-          5: { cellWidth: (pageWidth - 50) / 4 },
+          2: { cellWidth: (pageWidth - 45) / 4 }, // Flexible column
+          3: { cellWidth: (pageWidth - 45) / 4 },
+          4: { cellWidth: (pageWidth - 45) / 4 },
+          5: { cellWidth: (pageWidth - 45) / 4 },
         },
         horizontalPageBreak: false, // Prevent table from breaking across pages
         pageBreak: "auto",
