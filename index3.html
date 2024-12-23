@@ -121,7 +121,7 @@
             styles: {
               halign: 'center',
               valign: 'middle',
-              fontSize: 14,
+              fontSize: 20,
               minCellHeight: rowHeight, // Set row height explicitly
             },
             columnStyles: {
@@ -132,19 +132,12 @@
               4: { cellWidth: (pageWidth - 45) / 4 },
               5: { cellWidth: (pageWidth - 45) / 4 },
             },
-            didDrawCell: (data) => {
+            willDrawCell: (data) => {
               if (pageRows[data.row.index]?.isWeekend) {
                 pdf.setFillColor(211, 211, 211);
-                //pdf.rect(
-                //  data.cell.x,
-                //  data.cell.y,
-                //  data.cell.width,
-                //  data.cell.height,
-                //  'F'
-                //);
               }
             },
-            //rowPageBreak: 'auto',
+            rowPageBreak: 'auto',
             tableWidth: 'auto',
           });
         });
