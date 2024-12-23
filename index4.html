@@ -131,7 +131,7 @@
           // Draw the vertical month and year label manually
           pdf.setFontSize(30);
           const text = `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
-          pdf.text(text, 10, 140, { angle: 90 }); // Adjust rotation direction and positioning
+          pdf.text(text, 15, 140, { angle: 90 }); // Adjust rotation direction and positioning
 
           const startY = pageIndex === 0 ? 210 - (rowHeight * 9) : 0; // Align first page table at the bottom
 
@@ -144,7 +144,7 @@
           pdf.autoTable({
             body: tableBody,
             startY: startY,
-            margin: { top: 0, left: 15, right: 0, bottom: -20 },
+            margin: { top: 0, left: 20, right: 0, bottom: -20 },
             theme: 'grid',
             styles: {
               halign: 'center',
@@ -155,10 +155,10 @@
             columnStyles: {
               0: { cellWidth: 15 }, // Day column
               1: { cellWidth: 15 }, // Date column
-              2: { cellWidth: (pageWidth - 45) / 4 }, // Flexible column
-              3: { cellWidth: (pageWidth - 45) / 4 },
-              4: { cellWidth: (pageWidth - 45) / 4 },
-              5: { cellWidth: (pageWidth - 45) / 4 },
+              2: { cellWidth: (pageWidth - 50) / 4 }, // Flexible column
+              3: { cellWidth: (pageWidth - 50) / 4 },
+              4: { cellWidth: (pageWidth - 50) / 4 },
+              5: { cellWidth: (pageWidth - 50) / 4 },
             },
             willDrawCell: (data) => {
               if (pageRows[data.row.index]?.isWeekend) {
