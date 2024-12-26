@@ -151,6 +151,8 @@
               valign: 'middle',
               fontSize: 20,
               minCellHeight: rowHeight, // Set row height explicitly
+              textColor: 0,
+              lineColor: 0,
             },
             columnStyles: {
               0: { cellWidth: 15 }, // Day column
@@ -171,7 +173,7 @@
         });
       });
 
-      pdf.save('aangepaste_kalender.pdf');
+      pdf.save('kalender.pdf');
     }
   </script>
 </body>
